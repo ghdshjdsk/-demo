@@ -1,0 +1,40 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlateIconsUI : MonoBehaviour
+{
+    [SerializeField] private PlateKitchenObject plateKitchenObject;
+    [SerializeField] private Transform iconTemplate;
+
+    void Awake()
+    {
+        iconTemplate.gameObject.SetActive(false);
+    }
+
+    void Start()
+    {
+        plateKitchenObject.OnIngredientAdded += PlateKitchenObject_OnIngredientAdded;
+    }
+
+    private void PlateKitchenObject_OnIngredientAdded(object sender,PlateKitchenObject.OnIngredientAddedEventArgs e)
+    {
+        UpdateIconUI();
+    }
+
+    private void UpdateIconUI()
+    {
+        foreach(Transform child in transform)
+        {
+            if(child == iconTemplate) continue;
+            Destroy(child.gameObject);
+        }
+
+        foreach(var kitchenObjectSO in plateKitchenObject.GetKitchenObjectSOList())
+        {
+            Transform iconTransfrom = Instantiate(iconTemplate,transform);
+            iconTransfrom.gameObject.SetActive(true);
+            iconTransfrom.GetComponent<PlateIconSingleUI>().UpdateUI(kitchenObjectSO);
+        }
+    }
+}
